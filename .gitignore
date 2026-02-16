@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+ml_project_env/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# Mac OS
+.DS_Store
+
+# Data (Don't commit large raw files!)
+ml/data/raw/*.csv
+ml/models/artifacts/*.pkl
+
+# Logs
+*.log
