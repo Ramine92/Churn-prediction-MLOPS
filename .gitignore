@@ -21,7 +21,7 @@ ml_project_env/
 .DS_Store
 
 # Data (Don't commit large raw files!)
-ml/data/raw/*.csv
+!ml/data/raw/*.csv
 ml/models/artifacts/*.pkl
 
 # Logs
