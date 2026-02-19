@@ -6,7 +6,7 @@ router = APIRouter()
 @router.post("/predict",response_model=PredictionResponse)
 async def predict_endpoint(data:PredictionRequest):
     try:
-        customer_data = data.dict()
+        customer_data = data.model_dump()
         prediction,probability = predict_service(customer_data)
         if hasattr(prediction,"item"):
             prediction = prediction.item()
