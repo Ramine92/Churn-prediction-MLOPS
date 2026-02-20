@@ -28,8 +28,13 @@ jobs:
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
             
-            - name: Train Model (Build Artifact)
-              run: python ml/models/train.py
+            - name: Pull Data and Model via DVC
+              env: 
+                   AWS_ACCESS_KEY_ID: ${{secrets.DAGSHUB_TOKEN}}
+                   AWS_SECRET_ACCESS_KEY: ${{secrets.DAGSHUB_TOKEN}}
+              run: |
+                  pip install dvc-s3
+                  dvc pull
 
             - name: Run Tests With Pytest
               run: pytest tests/
