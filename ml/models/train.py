@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np 
 from pathlib import Path
 import joblib
+import dagshub
+import mlflow
 from sklearn.preprocessing import OneHotEncoder,StandardScaler,FunctionTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split,StratifiedKFold,cross_validate
@@ -9,6 +11,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 
+dagshub.init(repo_owner="Ramine92",repo_name="Churn-prediction-MLOPS",mlflow=True)
 BASE_DIR = Path(__file__).parent.parent
 DATA_PATH = BASE_DIR / "data"/ "raw"/ "Telco-Customer-Churn.csv"
 def load_data():
@@ -72,13 +75,12 @@ def train_model(X,y):
     #metrics
     scoring = ["accuracy","precision","recall","f1","roc_auc"]
     cv_results = cross_validate(pipeline,X_train,y_train,cv=skf,scoring=scoring,return_train_score=True)
-    #show metrics
-    print(f"recall: {cv_results['test_recall'].mean():.3f}")
-    print(f"precision: {cv_results['test_precision'].mean():.3f}")
-    print(f"f1: {cv_results['test_f1'].mean():.3f}")
-    print(f"roc_auc: {cv_results['test_roc_auc'].mean():.3f}")
-    print(f"accuracy: {cv_results['test_accuracy'].mean():.3f}")
-    
+    # === Logging MLflow ===
+    mlflow.log_metric("recall", cv_results['test_recall'].mean())
+    mlflow.log_metric("precision", cv_results['test_precision'].mean())
+    mlflow.log_metric("f1", cv_results['test_f1'].mean())
+    mlflow.log_metric("roc_auc", cv_results['test_roc_auc'].mean())
+    mlflow.log_metric("accuracy", cv_results['test_accuracy'].mean())
     return pipeline
     
 def save_model(model):
@@ -90,5 +92,15 @@ def save_model(model):
 if __name__ == "__main__":
     df = load_data()
     X,y = clean_data(df)
+    mlflow.set_experiment("Baseline_Models")
+
+    with mlflow.start_run():
+        print("Démarrage de la Run MLflow...")
+
+    mlflow.log_param("model_type","Logistic Regression")
+
+    mlflow.log_param("class_weight","balanced")
     model = train_model(X,y)
+    
+    mlflow.sklearn.log_model(model,"logistic_regression_model")
     save_model(model)
