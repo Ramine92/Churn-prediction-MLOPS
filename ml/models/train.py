@@ -1,3 +1,4 @@
+from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 import numpy as np 
 from pathlib import Path
@@ -30,7 +31,7 @@ def clean_data(df):
     else:
         return df,None
 
-def get_pipeline(X):
+def get_pipeline(X,model):
     cat_features = X.select_dtypes(include=["object"]).columns.tolist()
     normal_features = ["tenure","MonthlyCharges"]
     skewed_features = ["TotalCharges"]
@@ -57,17 +58,25 @@ def get_pipeline(X):
             ("skewed",skewed_transformer,skewed_features)
         ]
     )
-    pipeline = Pipeline(steps=[
-        ("preprocessor",preprocessor),
-        ("model",LogisticRegression(class_weight="balanced",random_state=42))
-    ])
+    if model == "Logistic_Regression":
+        pipeline = Pipeline(steps=[
+            ("preprocessor",preprocessor),
+            ("model",LogisticRegression(class_weight="balanced",random_state=42))
+        ])
+    elif model == "Random_Forest":
+        pipeline = Pipeline(
+            steps=[
+                ("preprocessor",preprocessor),
+                ("model",RandomForestClassifier(class_weight="balanced",max_depth=10,min_samples_split=9,n_estimators=87,random_state=42))
+            ]
+        )
     return pipeline
 
-def train_model(X,y):
+def train_model(X,y,model):
     #split data
     X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42,stratify=y)
     #get pipeline
-    pipeline = get_pipeline(X_train)
+    pipeline = get_pipeline(X_train,model)
     #fit model
     pipeline.fit(X_train,y_train)
     #stratified k-fold cross_val
@@ -83,24 +92,24 @@ def train_model(X,y):
     mlflow.log_metric("accuracy", cv_results['test_accuracy'].mean())
     return pipeline
     
-def save_model(model):
+def save_model(model,model_name):
     artifacts_path = BASE_DIR / "models" / "artifacts"
     artifacts_path.mkdir(parents=True,exist_ok=True)
-    joblib.dump(model,artifacts_path / "model_v1.pkl")
+    joblib.dump(model,artifacts_path / f"{model_name}_v1.pkl")
     print("model saved successfully")
 
 if __name__ == "__main__":
     df = load_data()
     X,y = clean_data(df)
     mlflow.set_experiment("Baseline_Models")
-
+    model_name = "Logistic_Regression"
     with mlflow.start_run():
-        print("Démarrage de la Run MLflow...")
-
-    mlflow.log_param("model_type","Logistic Regression")
-
-    mlflow.log_param("class_weight","balanced")
-    model = train_model(X,y)
-    
-    mlflow.sklearn.log_model(model,"logistic_regression_model")
-    save_model(model)
+        print(f"Démarrage de la Run MLflow pour {model_name}...")
+        mlflow.log_param("model_type",model_name)
+        if model_name == "Logistic_Regression":
+            mlflow.log_param("class_weight","balanced")
+        elif model_name == "Random_Forest":
+            mlflow.log_params({"class_weight": "balanced", "max_depth": 10, "min_samples_split": 9, "n_estimators": 87})
+        model = train_model(X,y,model_name)
+        mlflow.sklearn.log_model(model,f"{model_name}_model")
+        save_model(model,model_name)
