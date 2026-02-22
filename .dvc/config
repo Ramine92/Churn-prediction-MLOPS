@@ -1,7 +1,7 @@
 [core]
     remote = origin
-['remote "myremote"']
+[remote "myremote"]
     url = gdrive://18eCbN_lq3GdC-GvGOOuvEDJa9HE8aFDt
-['remote "origin"']
+[remote "origin"]
     url = s3://dvc
     endpointurl = https://dagshub.com/Ramine92/Churn-prediction-MLOPS.s3
