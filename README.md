@@ -31,8 +31,8 @@ This project addresses **customer churn prediction** for a telecom company using
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |---|---|---|---|---|---|
-| Logistic Regression | 0.82 | 0.67 | 0.55 | 0.60 | 0.84 |
-| Random Forest (Tuned) | 0.77 | 0.55 | 0.72 | 0.62 | 0.84 |
+| Logistic Regression | 0.75 | 0.52 | 0.8 | 0.635 | 0.85 |
+| Random Forest (Tuned) | 0.77 | 0.55 | 0.72 | 0.63 | 0.84 |
 
 > **Business Choice:** Random Forest was selected for its higher **Recall** (72%), meaning it catches more customers about to leave — which is more valuable than overall accuracy in a churn scenario.
 
