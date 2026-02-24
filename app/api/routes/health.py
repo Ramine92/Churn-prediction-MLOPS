@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.core.confing import MODEL_NAME
+from app.core.config import MODEL_NAME
 router = APIRouter()
 
 @router.get("/health")
