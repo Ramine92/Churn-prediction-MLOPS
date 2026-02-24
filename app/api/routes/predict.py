@@ -3,7 +3,7 @@ from app.services.predictor import predict as predict_service
 from app.api.schemas import PredictionResponse,PredictionRequest
 router = APIRouter()
 
-@router.post("/predict",response_model=PredictionResponse)
+@router.post("/",response_model=PredictionResponse)
 async def predict_endpoint(data:PredictionRequest):
     try:
         customer_data = data.model_dump()
