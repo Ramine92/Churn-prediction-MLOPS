@@ -27,7 +27,7 @@ test_data = {
 }
 
 def test_prediction():
-    response = client.post("/predict/predict",json=test_data)
+    response = client.post("/predict",json=test_data)
     assert response.status_code == 200
     assert "prediction" in response.json()
     assert "will_churn" in response.json()
