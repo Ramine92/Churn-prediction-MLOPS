@@ -225,8 +225,8 @@ Visit `/docs` for the Swagger UI:
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/` | Welcome message |
-| GET | `/health/health` | Health check + active model name |
-| POST | `/predict/predict` | Churn prediction |
+| GET | `/health` | Health check + active model name |
+| POST | `/predict` | Churn prediction |
 
 ### Example: Predict Churn
 
